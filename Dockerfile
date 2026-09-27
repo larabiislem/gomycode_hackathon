@@ -10,24 +10,15 @@ RUN apt-get update && apt-get install -y \
     gcc \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy only the requirements first to leverage Docker cache
-# Wait, this project uses pyproject.toml / pip install -e .
-# So we copy pyproject.toml first
-COPY pyproject.toml ./
+# Copy the entire project code first
+COPY . .
 
 # Upgrade pip
 RUN pip install --no-cache-dir --upgrade pip
 
-# Create a dummy src directory so `pip install -e .` doesn't fail before code is copied
-RUN mkdir -p src/brandforge && touch src/brandforge/__init__.py
-
-# Install project dependencies
-# We also explicitly install the additional packages added during development
+# Install the project and all its dependencies correctly
 RUN pip install --no-cache-dir .
 RUN pip install --no-cache-dir sqlmodel passlib[bcrypt] python-jose "pydantic[email]" python-multipart "bcrypt<4.0.0"
-
-# Now copy the rest of the application code
-COPY . .
 
 # Ensure data directory exists for SQLite
 RUN mkdir -p data
