@@ -1,0 +1,35 @@
+# BrandForge AI - Git Ignore
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Environment
+.env
+.venv/
+venv/
+env/
+
+# Data (keep structure, ignore generated data)
+data/lancedb/
+data/generated/
+data/logs/
+data/brandforge.db
+*.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
+.pytest_cache/
+htmlcov/
+.coverage
