@@ -1,31 +1,18 @@
 """Database configuration and initialization."""
 
 import os
-from typing import Optional, Union
+from sqlmodel import SQLModel, create_engine, Session
 
-from agno.db.sqlite import SqliteDb
-from agno.db.postgres import PostgresDb
+sqlite_file_name = "data/markai.db"
+sqlite_url = f"sqlite:///{sqlite_file_name}"
 
-def get_db(db_file: str = "data/brandforge.db", session_table: str = "agent_sessions") -> SqliteDb:
-    """Get a configured SqliteDb instance."""
-    return SqliteDb(
-        session_table=session_table,
-        db_file=db_file,
-    )
+engine = create_engine(sqlite_url, echo=False)
 
-def get_postgres_db(database_url: Optional[str] = None, session_table: str = "agent_sessions") -> Optional[PostgresDb]:
-    """Get a PostgresDb instance for production if URL is provided."""
-    url = database_url or os.environ.get("DATABASE_URL")
-    if url:
-        return PostgresDb(
-            session_table=session_table,
-            db_url=url,
-        )
-    return None
-
-def init_database() -> None:
-    """Initialize database and create tables/storage."""
+def init_db():
     os.makedirs("data", exist_ok=True)
-    db = get_db()
-    # AGNO v3 manages schema initialization internally, no need to call .create()
+    SQLModel.metadata.create_all(engine)
+
+def get_session():
+    with Session(engine) as session:
+        yield session
 
